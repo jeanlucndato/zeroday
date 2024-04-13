@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for post in object_list %}
+
+
+<!-- Main Content-->
+<div class="container px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+            <!-- Post preview-->
+            <div class="post-preview">
+                <a href="{% url 'article-detail' post.pk %}">
+                    <h2 class="post-title">{{ post.title }}</h2>
+                    <h3 class="post-subtitle">{{ post.subtitle }}</h3>
+                    <p>
+                        <h6><small>{{ post.body|slice:":200"|safe }}</small></h6>
+                    </p>
+                </a>
+                
+                {% if user.is_authenticated %}
+                    {% if user.id == post.author.id %}
+                        <div class="d-flex justify-content-end mb-4">
+                            <a class="btn btn-warning text-uppercase" href="{% url 'update_post' post.pk %}">
+                                Edit
+                            </a>
+                        </div>
+                    {% endif %}
+                {% endif %}
+                
+                <p class="post-meta">
+                    Posted by
+                     - {{ post.author}} - <a href="{% url 'category' post.category|slugify %}">{{ post.category }}</a>
+                    on {{ post.post_date }} 
+                    <br><hr>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endfor %}
+<!-- Divider-->
+<hr class="my-4" />
+<!-- Pager-->
+<div class="d-flex justify-content-end mb-4"><a class="btn btn-primary text-uppercase" href="#!">Older Posts →</a></div>
+
+{% endblock content %}

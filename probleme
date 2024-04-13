@@ -1,0 +1,2 @@
+lorsque je essai de change le mots de passe, le serveur me redirige vers le fichier change/password alors que le fichier qui doit etre ouvert ce memebres/password
+et le formulaire d'ajoute d'article amene un erreur
