@@ -43,8 +43,13 @@
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'add_post' %}">Add Post</a></li>
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'add_category' %}">Add Category</a></li>
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'edit_profile' %}">Update Profile</a></li>
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'edit_profile_page' user.profile.id %}">edit Profile</a></li>
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'show_profile_page' user.profile.id %}">Show Profile</a></li>
+                        
+                        {% if user.profile.id %}
+                            <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'edit_profile_page' user.profile.id %}">edit Profile</a></li>
+                            <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'show_profile_page' user.profile.id %}">Show Profile</a></li>
+                        {% else %}
+                            <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'create_profile_page' %}">createProfile</a></li>
+                        {% endif %}
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'deconnexion' %}" >Logout</a></li>
                     {% else %}
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'register' %}">Register</a></li>
@@ -82,7 +87,7 @@
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         <ul class="list-inline text-center">
                             <li class="list-inline-item">
-                                <a href="#!">
+                                <a href="{{ page_user.twitter_url }}">
                                     <span class="fa-stack fa-lg">
                                         <i class="fas fa-circle fa-stack-2x"></i>
                                         <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
@@ -90,7 +95,14 @@
                                 </a>
                             </li>
                             <li class="list-inline-item">
-                                <a href="#!">
+                                <a href="{{ page_user.website_url }}">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="bx bxl-siteweb"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="{{ page_user.website_url }}">
                                     <span class="fa-stack fa-lg">
                                         <i class="fas fa-circle fa-stack-2x"></i>
                                         <i class="bx bxl-facebook"></i>
@@ -135,7 +147,7 @@
                                 </a>
                             </li>
                         </ul>
-                        <div class="small text-center text-muted fst-italic">Copyright &copy; {% now "Y" %} - inversehacker</div>                 
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; {% now "Y" %} - <a href="https://www.linkedin.com/in/irjeanluck-ndato">inversehacker</a></div>                
                     </div>
                 </div>
             </div>

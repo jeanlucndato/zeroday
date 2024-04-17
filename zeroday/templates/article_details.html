@@ -33,19 +33,27 @@
                     Menu
                     <i class="fas fa-bars"></i>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarResponsive">
+                <div class="collapse navbar-collapse"  id="navbarResponsive">
                     <ul class="navbar-nav ms-auto py-4 py-lg-0">
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'home' %}">Home</a></li>
 
                     {% if user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'add_post' %}">Add post</a></li>
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'deconnexion' %}">Logout</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'add_post' %}">Add Post</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'add_category' %}">Add Category</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'edit_profile' %}">Update Profile</a></li>
+                        
+                        {% if user.profile.id %}
+                            <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'edit_profile_page' user.profile.id %}">edit Profile</a></li>
+                            <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'show_profile_page' user.profile.id %}">Show Profile</a></li>
+                        {% else %}
+                            <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'create_profile_page' %}">creatProfile</a></li>
+                        {% endif %}
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'deconnexion' %}" >Logout</a></li>
                     {% else %}
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'register' %}">Register</a></li>
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'login' %}">Login</a></li>
                     {% endif %}
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="#">Cintelligence</i></a></li>
+                    
                     </ul>
                 </div>
             </div>
@@ -94,6 +102,57 @@
                             {{ post.conclusion|safe }}.</p>
                         </blockquote> <br/><hr/>
 
+                        {% if user.is_authenticated %}
+
+                            {% if user.id == post.author.id %}
+                                <a class="btn btn-warning text-uppercase" href="{% url 'update_post' post.pk %}">
+                                    Edit
+                                </a>
+                                <a class="btn btn-danger text-uppercase" href="{% url 'delete_post' post.pk %}">
+                                    Delete
+                                </a>
+                            {% endif %}
+                        {% endif %}
+
+                        <br><br><hr>
+                        <form action="{% url 'like_post' post.pk %}" method="post">
+                            {% csrf_token %}
+                            {% if user.is_authenticated %}
+
+                                {% if liked %}
+                                    <button type="submit", name="post_id", value="{{ post.id }}", class="btn btn-danger btn-sm">Unlike</button>
+                                {% else %}
+                                    <button type="submit", name="post_id", value="{{ post.id }}", class="btn btn-primary btn-sm">like</button>
+                                {% endif %}
+                            {% else %}
+                                <small>You must be    <a href="{% url 'login' %}"><b>  login</a></b>
+                            {% endif %}
+                             - {{ total_likes }}Likes
+                        </form>
+ 
+                        <br><br><hr>
+
+                        <h1>Comment...</h1>
+
+                        {% if not post.comments.all %}
+                            No Comments Yet..<a href="{% url 'add_comment' post.pk %}">Add One</a> 
+                        <br><hr>
+
+                        {% else %}
+                        <a href="{% url 'add_comment' post.pk %}"><strong> Add comment</a></strong>
+                        <br><br>
+                            {% for comment in post.comments.all %}
+                                <strong>
+                                {{ comment.name }} - {{ comment.date_added }}
+                                </strong>
+                                {{ comment.body }}
+                                <a href="{% url 'add_comment' post.pk %}"><strong> Add comment</a></strong>
+
+                            {% endfor %}
+                        {% endif %}
+                        <br> <br>
+
+                        <br><br><hr>
                         <div class="card mb-3">
                             <div class="row no-gutters">
                                {% if post.author.profile.profile_pic %}
@@ -135,39 +194,9 @@
                                 </div> 
                             </div>
                         </div> 
-
-                        {% if user.is_authenticated %}
-
-                            {% if user.id == post.author.id %}
-                                <a class="btn btn-warning text-uppercase" href="{% url 'update_post' post.pk %}">
-                                    Edit
-                                </a>
-                                <a class="btn btn-danger text-uppercase" href="{% url 'delete_post' post.pk %}">
-                                    Delete
-                                </a>
-                            {% endif %}
-                        {% endif %}
-
                         <hr class="my-4" />
                         <!-- Pager-->
                         <div class="d-flex justify-content-end mb-4"><a class="btn btn-secondary text-uppercase" href="{% url 'home' %}">→ ...Back</a></div>
-
-                        <br><br><hr>
-                            <form action="{% url 'like_post' post.pk %}" method="post">
-                                {% csrf_token %}
-                                {% if user.is_authenticated %}
-
-                                    {% if liked %}
-                                        <button type="submit", name="post_id", value="{{ post.id }}", class="btn btn-danger btn-sm">Unlike</button>
-                                    {% else %}
-                                        <button type="submit", name="post_id", value="{{ post.id }}", class="btn btn-primary btn-sm">like</button>
-                                    {% endif %}
-                                {% else %}
-                                    <small>You must be    <a href="{% url 'login' %}"><b>  login</a></b>
-                                {% endif %}
-                                 - {{ total_likes }}Likes
-                            </form>
-                        
                             Placeholder text by
                             <a href="http://spaceipsum.com/">{{ post.author.last_name }}</a>
                             &middot; Images by
@@ -184,64 +213,54 @@
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         <ul class="list-inline text-center">
                             <li class="list-inline-item">
-                                <a href="#!">
+                                <a href="{{ page_user.twitter_url }}" class="twitter">
                                     <span class="fa-stack fa-lg">
-                                        <i class="fas fa-circle fa-stack-2x"></i>
-                                        <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
-                                    </span>
-                                </a>
-                            </li>
-                            <li class="list-inline-item">
-                                <a href="https://www.facebook.com/jeanluc.ndato">
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fas fa-circle fa-stack-2x"></i>
-                                        <i class="bx bxl-facebook"></i>
-                                    </span>
-                                </a>
-                            </li>
-                            <li class="list-inline-item">
-                                <a href="https://github.com/jeanlucndato">
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fas fa-circle fa-stack-2x"></i>
-                                        <i class='bx bxl-github'></i>
-                                    </span>
-                                </a>
-                            </li>
-                            <li class="list-inline-item">
-                                <a href="https://www.instagram.com/iamjeanluckndt">
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fas fa-circle fa-stack-2x"></i>
-                                        <i class="bx bxl-instagram"></i>
-                                    </span>
-                                </a>
-                            </li>
-                            <li class="list-inline-item">
-                                <a href="https://twitter.com/IrjeanL">
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fas fa-circle fa-stack-2x"></i>
                                         <i class="bx bxl-twitter"></i>
                                     </span>
                                 </a>
                             </li>
                             <li class="list-inline-item">
-                                <a href="https://www.linkedin.com/in/irjeanluck-ndato">
+                                <a href="{{ page_user.facebook_url }}" class="facebook">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="bx bxl-facebook"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="{{ page_user.github_url }}" class="github">
+                                    <span class="fa-stack fa-lg">
+                                        <i class='bx bxl-github'></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="{{ page_user.instagram_url }}" class="instagram">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="bx bxl-instagram"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="{{ page_user.linkdin_url }}" class="Linkdin">
                                     <span class="fa-stack fa-lg">
                                         <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="bx bxl-Linkdin"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="{{ page_user.blogger_url }}" class="blogger">
+                                    <span class="fa-stack fa-lg">
                                         <i class='bx bxl-blogger'></i>
                                     </span>
                                 </a>
                             </li>
                         </ul>
-
-                        <div class="small text-center text-muted fst-italic">Copyright &copy; Inversehacker - {% now "Y-m-d" %}</div>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; {% now "Y" %} - <a href="https://www.linkedin.com/in/irjeanluck-ndato">inversehacker</a></div>                 
                     </div>
                 </div>
             </div>
+            <script src="{% static '/js/bootstrap.min.js' %}"></script>
         </footer>
-        <!-- Bootstrap core JS-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- Core theme JS-->
-        <script src="{% static '/js/bootstrap.min.js' %}"></script>
     </body>
 </html>
-
