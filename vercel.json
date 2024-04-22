@@ -1,18 +1,30 @@
 {
+    "version": 2,
     "builds": [
         {
-            "src": "zeroday/wsgi.py",
+            "src": "inverseblog/wsgi.py",
             "use": "@vercel/python",
             "config": {
                 "maxLambdaSize": "15mb",
-                "runtime": "Python 3.11.2                "
+                "runtime": "python3.9"
+            }
+        },
+        {
+            "src": "build_files.sh",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "staticfiles_build"
             }
         }
     ],
     "routes": [
         {
+            "src": "/static/(.*)",
+            "dest": "/static/$1"
+        },
+        {
             "src": "/(.*)",
-            "dest": "zeroday/wsgi.py"
+            "dest": "inverseblog/wsgi.py"
         }
     ]
 }
